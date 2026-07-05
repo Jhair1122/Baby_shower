@@ -8,159 +8,138 @@
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* =====================================================================
-   PALETA — cambia colores del tema en :root o en .tema-rosa / .tema-neutro
+   CONFIG VISUAL — 3 escenas, cada una son las 2 diapositivas que la usan
+   Escena 1 (vertical 5:7)  -> bebe_mickie.png       -> slides 0 y 1
+   Escena 2 (vertical 5:7)  -> mickie_durmiendo.jpg  -> slides 2 y 3
+   Escena 3 (horizontal 3:2)-> mickie_pluto.jpg      -> slides 4 y 5
    ===================================================================== */
 :root{
-  --fondo-1:#e9eefb;
-  --fondo-2:#dbe6fb;
-  --fondo-3:#f3e9fb;
-  --tarjeta:#fffdf8;
-  --tarjeta-borde:rgba(255,255,255,.7);
   --texto-oscuro:#33425a;
-  --texto-medio:#75839c;
+  --texto-medio:#5c6c88;
   --acento:#5c7fa3;
   --acento-2:#8b7fb0;
   --acento-3:#c99a5b;
   --estrella:#f4c65b;
-}
-body.tema-rosa{
-  --fondo-1:#fbecf1; --fondo-2:#f7dbe6; --fondo-3:#f3e9fb;
-  --texto-oscuro:#6e3b52; --texto-medio:#a2748b;
-  --acento:#c9748f; --acento-2:#b78bb0; --acento-3:#d9a75b;
-}
-body.tema-neutro{
-  --fondo-1:#f2efe6; --fondo-2:#e6dfcd; --fondo-3:#ece3f0;
-  --texto-oscuro:#4a4432; --texto-medio:#8a8064;
-  --acento:#9c8a5c; --acento-2:#a08fae; --acento-3:#c99a5b;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
 html,body{height:100%;overflow:hidden;}
 body{
   font-family:'Quicksand',sans-serif;
-  background:#1c2a3d;
   color:var(--texto-oscuro);
+  background:
+    radial-gradient(circle at 15% 20%, #f3e9fb, transparent 45%),
+    radial-gradient(circle at 85% 15%, #dbe6fb, transparent 50%),
+    radial-gradient(circle at 50% 100%, #dbe6fb, transparent 55%),
+    linear-gradient(180deg, #e9eefb, #ffffff 92%);
 }
 .script{font-family:'Dancing Script',cursive;}
 
-/* ---------- Escena fija (fondo compartido por todas las diapositivas) ---------- */
-#historia{
-  position:relative;width:100vw;height:100dvh;overflow:hidden;
-  background:
-    radial-gradient(circle at 12% 18%, var(--fondo-3), transparent 45%),
-    radial-gradient(circle at 88% 14%, var(--fondo-2), transparent 50%),
-    radial-gradient(circle at 50% 100%, var(--fondo-2), transparent 55%),
-    linear-gradient(180deg, var(--fondo-1), #ffffff 92%);
+/* ---------- Escenario (marco tipo "pantalla de video") ---------- */
+#escenario{
+  position:relative;width:100vw;height:100dvh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
 }
 .decor-fija{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
-.nube-fija{position:absolute;background:#fff;border-radius:50%;opacity:.85;filter:blur(.2px);}
+.nube-fija{position:absolute;background:#fff;border-radius:50%;opacity:.7;filter:blur(.2px);}
 .chispa{position:absolute;color:var(--estrella);animation:flotar 4.2s ease-in-out infinite;}
 .chispa svg{width:100%;height:100%;}
 @keyframes flotar{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-12px) rotate(6deg);}}
 
+/* ---------- El "lienzo": caja con la MISMA proporción que la imagen activa ---------- */
+#lienzo{
+  position:relative;z-index:5;
+  max-width:94vw;max-height:88dvh;
+  width:auto;height:auto;
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 30px 60px -18px rgba(51,66,90,.38);
+  container-type:inline-size;
+  transition:box-shadow .4s ease;
+}
+#lienzo.vertical{aspect-ratio:5/7;height:88dvh;}
+#lienzo.horizontal{aspect-ratio:500/333;width:94vw;}
+@media (min-aspect-ratio: 5/7){ #lienzo.vertical{width:auto;height:88dvh;} }
+
+.capa-fondo{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:fill;
+  opacity:0;
+  transition:opacity 1.1s ease;
+  animation:respirar 9s ease-in-out infinite alternate;
+  will-change:opacity,transform;
+}
+.capa-fondo.visible{opacity:1;}
+@keyframes respirar{ from{transform:scale(1);} to{transform:scale(1.045);} }
+
 /* Barra de progreso */
 #progreso{position:absolute;top:0;left:0;right:0;z-index:40;display:flex;gap:6px;padding:.6rem .7rem;}
-.segmento{flex:1;height:3px;background:rgba(51,66,90,.18);border-radius:3px;overflow:hidden;}
+.segmento{flex:1;height:3px;background:rgba(255,255,255,.55);border-radius:3px;overflow:hidden;box-shadow:0 0 0 1px rgba(51,66,90,.12);}
 .segmento .relleno{display:block;height:100%;width:0%;background:var(--acento);border-radius:3px;}
 .segmento.completo .relleno{width:100%;}
 .segmento.activo .relleno{animation-name:llenar;animation-timing-function:linear;animation-fill-mode:forwards;}
 @keyframes llenar{ from{width:0%;} to{width:100%;} }
 
-/* Zonas táctiles para navegar */
-.zona{position:absolute;top:0;bottom:0;width:34%;z-index:30;}
+/* Zonas táctiles para navegar (todo el viewport) */
+.zona{position:absolute;top:0;bottom:0;width:34%;z-index:50;}
 .zona.izq{left:0;}
 .zona.der{right:0;}
 
-/* ---------- Slides ---------- */
+/* ---------- Slides: viven DENTRO del lienzo, cada una limitada a su "zona segura" ---------- */
 .slide{
-  position:absolute;inset:0;z-index:10;
+  position:absolute;z-index:10;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:4rem 1.4rem 2.4rem;
-  opacity:0;transform:translateY(4%) scale(.97);
-  transition:opacity .55s ease, transform .55s cubic-bezier(.22,.68,.35,1);
+  gap:.5cqi;
+  text-align:center;
+  opacity:0;transform:translateY(3cqi) scale(.98);
+  transition:opacity .7s ease, transform .7s cubic-bezier(.22,.68,.35,1);
   pointer-events:none;
+  overflow:hidden;
 }
 .slide.activo{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;z-index:12;}
-.slide.saliendo-arriba{opacity:0;transform:translateY(-6%) scale(1.02);}
+.slide.saliendo-arriba{opacity:0;transform:translateY(-3cqi) scale(1.02);}
 
-/* Texto con revelado en cascada */
-.an{opacity:0;transform:translateY(16px);transition:opacity .75s ease, transform .75s cubic-bezier(.22,.68,.35,1);}
+/* Zonas seguras (dentro del área en blanco de cada imagen) — ajusta estos % si tu recorte cambia */
+.slide[data-escena="1"]{ top:35%; bottom:20%; left:14%; right:14%; }
+.slide[data-escena="2"]{ top:28%; bottom:22%; left:11%; right:11%; }
+.slide[data-escena="3"]{ top:7%;  bottom:45%; left:14%; right:14%; }
+
+/* Texto: cascada por bloque (an) + cascada por letra (dentro de cada bloque) */
+.an{opacity:0;transform:translateY(10px);transition:opacity .5s ease, transform .5s cubic-bezier(.22,.68,.35,1);}
 .an.mostrar{opacity:1;transform:translateY(0);}
+.letra{display:inline-block;opacity:0;transform:translateY(6px);transition:opacity .38s ease, transform .38s ease;transition-delay:calc(var(--i,0) * 22ms);}
+.an.mostrar .letra{opacity:1;transform:translateY(0);}
 
-/* ---------- Espacio para imagen PNG (osito, teddy, etc.) ---------- */
-.marco-imagen{
-  position:relative;width:132px;height:132px;margin:0 auto 1rem;
-}
-.marco-imagen img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 10px 16px rgba(51,66,90,.18));}
-.marco-imagen .placeholder{
-  position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;
-  background:rgba(255,255,255,.6);border:2px dashed rgba(117,131,156,.4);border-radius:50%;
-  color:var(--texto-medio);
-}
-.marco-imagen .placeholder .emoji{font-size:1.6rem;}
-.marco-imagen .placeholder small{font-size:.55rem;line-height:1.3;padding:0 .6rem;font-family:monospace;}
-.marco-imagen.grande{width:170px;height:170px;}
-
-/* ---------- Portada ---------- */
-#slide-0 .eyebrow{letter-spacing:.35em;text-transform:uppercase;font-size:.72rem;color:var(--texto-medio);margin-bottom:.3rem;}
-#slide-0 h1{font-family:'Dancing Script',cursive;font-size:clamp(2.6rem,13vw,4.2rem);color:var(--texto-oscuro);line-height:1;}
-.toca-hint{position:absolute;bottom:2.6rem;left:0;right:0;text-align:center;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--texto-medio);animation:pulso 2.2s infinite ease-in-out;}
+.eyebrow{letter-spacing:.3em;text-transform:uppercase;font-size:clamp(.55rem,2.6cqi,.8rem);color:var(--texto-medio);}
+h1.titulo{font-family:'Dancing Script',cursive;font-size:clamp(1.8rem,11cqi,3.4rem);color:var(--texto-oscuro);line-height:1.05;text-shadow:0 2px 10px rgba(255,255,255,.75);}
+h2.subtitulo{font-size:clamp(.85rem,4cqi,1.25rem);font-weight:600;line-height:1.35;text-shadow:0 1px 8px rgba(255,255,255,.7);}
+.script-grande{font-family:'Dancing Script',cursive;font-weight:700;font-size:clamp(1.5rem,8cqi,2.6rem);color:var(--texto-oscuro);line-height:1.05;text-shadow:0 2px 10px rgba(255,255,255,.75);}
+p.texto{font-size:clamp(.7rem,3cqi,1rem);line-height:1.5;color:var(--texto-medio);max-width:46ch;}
+.toca-hint{position:absolute;bottom:1.6dvh;left:0;right:0;text-align:center;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--texto-medio);animation:pulso 2.2s infinite ease-in-out;z-index:45;}
 @keyframes pulso{0%,100%{opacity:.35}50%{opacity:1}}
 
-/* ---------- Tarjeta (nuevo diseño: papel con cintillo y doblez) ---------- */
-.tarjeta{
-  position:relative;
-  background:linear-gradient(165deg, var(--tarjeta), #fbf6ec);
-  width:min(88vw,370px);
-  padding:2.7rem 1.7rem 2.1rem;
-  border-radius:30px 30px 30px 8px;
-  border:1px solid var(--tarjeta-borde);
-  box-shadow:0 24px 46px -14px rgba(51,66,90,.28), 0 1px 0 rgba(255,255,255,.6) inset;
-}
-.tarjeta::after{
-  content:"";position:absolute;bottom:0;right:0;width:0;height:0;
-  border-style:solid;border-width:0 0 22px 22px;
-  border-color:transparent transparent rgba(51,66,90,.09) transparent;
-  border-bottom-left-radius:4px;
-}
-.tarjeta.giro-izq{transform:rotate(-1deg);}
-.tarjeta.giro-der{transform:rotate(1deg);}
-
-.cinta{
-  position:absolute;top:-16px;left:50%;transform:translateX(-50%);
-  color:#fff;padding:.5rem 1.5rem;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
-  clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%);
-  box-shadow:0 8px 16px rgba(51,66,90,.28);white-space:nowrap;
-}
-.tarjeta h2{font-size:1.3rem;color:var(--texto-oscuro);font-weight:600;line-height:1.35;margin-bottom:.4rem;}
-.tarjeta .script-grande{font-family:'Dancing Script',cursive;font-weight:700;font-size:clamp(2.3rem,9.5vw,3.2rem);color:var(--texto-oscuro);line-height:1;margin:.3rem 0;}
-.tarjeta p{font-size:.94rem;line-height:1.55;color:var(--texto-medio);}
-
-/* ---------- Slide fecha / lugar ---------- */
 .sticker-dia{
-  width:104px;height:104px;margin:1rem auto .5rem;border-radius:50%;position:relative;
+  width:22cqi;height:22cqi;max-width:120px;max-height:120px;margin:.3rem auto;border-radius:50%;position:relative;
   background:linear-gradient(160deg,#eef4fc,#cfe1f5);
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 10px 20px rgba(51,66,90,.18);
+  box-shadow:0 8px 16px rgba(51,66,90,.2);
   outline:3px solid #fff;outline-offset:-6px;
   transform:rotate(-4deg);
 }
-.sticker-dia span{font-family:'Dancing Script',cursive;font-weight:700;font-size:2.3rem;color:var(--texto-oscuro);}
-.linea-datos{margin-top:.4rem;font-size:.95rem;color:var(--texto-oscuro);font-weight:600;}
-.linea-datos small{display:block;font-weight:400;color:var(--texto-medio);font-size:.8rem;margin-top:.15rem;}
-.pin{font-size:1.25rem;margin:.6rem 0 .1rem;}
+.sticker-dia span{font-family:'Dancing Script',cursive;font-weight:700;font-size:clamp(1.2rem,8cqi,2rem);color:var(--texto-oscuro);}
+.linea-datos{font-size:clamp(.7rem,3.2cqi,.95rem);color:var(--texto-oscuro);font-weight:600;}
 
-.btn-accion{
-  display:inline-block;margin-top:1.1rem;padding:.75rem 1.9rem;
-  background:var(--acento);color:#fff;text-decoration:none;font-weight:600;
-  border-radius:30px;font-size:.85rem;letter-spacing:.02em;
-  box-shadow:0 12px 22px rgba(51,66,90,.22);border:none;cursor:pointer;font-family:'Quicksand',sans-serif;
+.btn-accion,.btn-secundario,.btn-mapa{
+  display:inline-block;font-family:'Quicksand',sans-serif;font-weight:600;border-radius:30px;cursor:pointer;
+  font-size:clamp(.62rem,2.8cqi,.82rem);letter-spacing:.02em;text-decoration:none;
+  padding:.55em 1.4em;border:none;
 }
-.btn-secundario{
-  padding:.7rem 1.5rem;background:transparent;border:2px solid var(--acento);color:var(--acento);
-  border-radius:30px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'Quicksand',sans-serif;
-}
-.acciones-final{display:flex;gap:.6rem;margin-top:1.3rem;flex-wrap:wrap;justify-content:center;}
+.btn-accion{background:var(--acento);color:#fff;box-shadow:0 10px 18px rgba(51,66,90,.25);}
+.btn-mapa{background:var(--acento-3);color:#fff;box-shadow:0 10px 18px rgba(51,66,90,.25);}
+.btn-secundario{background:transparent;border:2px solid var(--acento);color:var(--acento);padding:.5em 1.2em;}
+.fila-botones{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.3rem;}
+.pin-ubicacion{font-size:clamp(.9rem,4cqi,1.2rem);}
 
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.001ms !important;transition-duration:.001ms !important;}
@@ -169,96 +148,66 @@ body{
 </head>
 <body>
 
-<div id="historia">
-
-  <!-- Fondo compartido: nubes y chispas fijas (no se repiten por cada slide) -->
+<div id="escenario">
   <div class="decor-fija" id="decor-fija"></div>
+
+  <div id="lienzo" class="vertical">
+    <img class="capa-fondo" id="capa-a" alt="">
+    <img class="capa-fondo" id="capa-b" alt="">
+
+    <!-- ============ SLIDE 0 — Portada (Escena 1: bebé Mickey despierto) ============ -->
+    <section class="slide" data-escena="1" id="slide-0">
+      <p class="an letras eyebrow">Mi Baby Shower</p>
+      <h1 class="an letras titulo" id="s0-titulo">¡Bienvenidos!</h1>
+    </section>
+
+    <!-- ============ SLIDE 1 — Invitación (Escena 1) ============ -->
+    <section class="slide" data-escena="1" id="slide-1">
+      <h2 class="an letras subtitulo">La dulce espera<br>está por terminar…</h2>
+      <div class="an letras script-grande">Baby Shower</div>
+      <p class="an letras texto" id="s1-texto">de nuestro pequeño que viene en camino</p>
+    </section>
+
+    <!-- ============ SLIDE 2 — Mensaje (Escena 2: Mickey durmiendo) ============ -->
+    <section class="slide" data-escena="2" id="slide-2">
+      <p class="an letras texto" id="s2-mensaje">El amor se multiplicará y en la familia habrá una nueva sonrisa iluminando nuestras vidas.</p>
+      <div class="an letras script-grande" style="font-size:clamp(1.1rem,6cqi,1.8rem);">¡Gracias por ser parte<br>de nuestra alegría!</div>
+    </section>
+
+    <!-- ============ SLIDE 3 — Papás (Escena 2) ============ -->
+    <section class="slide" data-escena="2" id="slide-3">
+      <p class="an letras eyebrow">Sus papitos</p>
+      <div class="an letras script-grande" id="s3-papas">Mauro y Sandra</div>
+      <p class="an letras texto" id="s3-texto">Nos gustaría que estén en la primera fiestita que haremos en su honor para darle la bienvenida al mundo.</p>
+    </section>
+
+    <!-- ============ SLIDE 4 — Fecha (Escena 3: Mickey y Pluto) ============ -->
+    <section class="slide" data-escena="3" id="slide-4">
+      <p class="an letras eyebrow">Guarda la fecha</p>
+      <div class="sticker-dia an"><span id="s4-dia">29</span></div>
+      <div class="an letras script-grande" id="s4-mes" style="font-size:clamp(1.1rem,6.5cqi,1.7rem);">Diciembre</div>
+      <p class="an letras linea-datos" id="s4-hora">6:00 PM</p>
+      <a class="btn-accion an no-avanzar" id="s4-boton-whatsapp" href="#" target="_blank" rel="noopener">Confirmar asistencia</a>
+    </section>
+
+    <!-- ============ SLIDE 5 — Ubicación + Cierre (Escena 3) ============ -->
+    <section class="slide" data-escena="3" id="slide-final">
+      <p class="an letras linea-datos"><span class="pin-ubicacion">📍</span> Ubicación</p>
+      <p class="an letras texto" id="s5-ubicacion">Pasaje Salazar — Las Brisas, Pilcomayo</p>
+      <div class="fila-botones an">
+        <a class="btn-mapa no-avanzar" id="s5-boton-mapa" href="#" target="_blank" rel="noopener">Ver en Google Maps</a>
+      </div>
+      <div class="fila-botones an">
+        <button class="btn-secundario no-avanzar" id="btn-repetir">Ver de nuevo</button>
+        <button class="btn-accion no-avanzar" id="btn-compartir">Compartir</button>
+      </div>
+    </section>
+  </div>
 
   <div id="progreso"></div>
   <div class="zona izq" id="zona-izq"></div>
   <div class="zona der" id="zona-der"></div>
-
-  <!-- ============ SLIDE 0 — Portada ============ -->
-  <section class="slide" id="slide-0">
-    <p class="eyebrow an">Mi baby shower</p>
-    <div class="marco-imagen grande" data-nombre="mascota-portada.png">
-      <img alt="">
-      <div class="placeholder"><span class="emoji">🧸</span><small></small></div>
-    </div>
-    <h1 class="an" id="s0-titulo">Baby Shower</h1>
-    <p class="toca-hint">Toca para comenzar</p>
-  </section>
-
-  <!-- ============ SLIDE 1 — Invitación ============ -->
-  <section class="slide" id="slide-1">
-    <div class="tarjeta giro-izq" style="--c:var(--acento);">
-      <div class="cinta an" style="background:var(--acento);">Te invitamos</div>
-      <div class="marco-imagen" data-nombre="mascota-1.png">
-        <img alt=""><div class="placeholder"><span class="emoji">🧸</span><small></small></div>
-      </div>
-      <h2 class="an">La dulce espera<br>está por terminar&hellip;</h2>
-      <div class="script-grande an">Baby Shower</div>
-      <p class="an" id="s1-texto">de nuestro pequeño que viene en camino</p>
-    </div>
-  </section>
-
-  <!-- ============ SLIDE 2 — Mensaje ============ -->
-  <section class="slide" id="slide-2">
-    <div class="tarjeta giro-der" style="--c:var(--acento-2);">
-      <div class="cinta an" style="background:var(--acento-2);">Con amor</div>
-      <p class="an" id="s2-mensaje">El amor se multiplicará y en la familia habrá una nueva sonrisa iluminando nuestras vidas. Con amor e ilusión esperamos su llegada.</p>
-      <div class="script-grande an" style="font-size:clamp(1.7rem,7vw,2.3rem);margin-top:.7rem;">¡Gracias por ser<br>parte de nuestra alegría!</div>
-      <div class="marco-imagen" data-nombre="mascota-2.png" style="margin-top:.8rem;">
-        <img alt=""><div class="placeholder"><span class="emoji">🧸</span><small></small></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ SLIDE 3 — Papás ============ -->
-  <section class="slide" id="slide-3">
-    <div class="tarjeta giro-izq" style="--c:var(--acento-3);">
-      <div class="cinta an" style="background:var(--acento-3);">Sus papitos</div>
-      <div class="marco-imagen" data-nombre="mascota-3.png">
-        <img alt=""><div class="placeholder"><span class="emoji">🧸</span><small></small></div>
-      </div>
-      <div class="script-grande an" id="s3-papas">Mauro y Sandra</div>
-      <p class="an" id="s3-texto">Estamos muy felices y nos gustaría que estén en la primera fiestita que haremos en su honor para darle la bienvenida al mundo.</p>
-    </div>
-  </section>
-
-  <!-- ============ SLIDE 4 — Fecha y lugar ============ -->
-  <section class="slide" id="slide-4">
-    <div class="tarjeta giro-der" style="--c:var(--acento);">
-      <div class="cinta an" style="background:var(--acento);">Guarda la fecha</div>
-      <div class="marco-imagen" data-nombre="mascota-4.png">
-        <img alt=""><div class="placeholder"><span class="emoji">🧸</span><small></small></div>
-      </div>
-      <div class="script-grande an" style="font-size:clamp(1.5rem,6.5vw,2rem);">Te esperamos</div>
-      <div class="sticker-dia an"><span id="s4-dia">29</span></div>
-      <div class="script-grande an" id="s4-mes" style="font-size:clamp(1.7rem,7.5vw,2.2rem);">Diciembre</div>
-      <p class="linea-datos an" id="s4-hora">6:00 PM</p>
-      <div class="pin an">📍</div>
-      <p class="linea-datos an" id="s4-lugar">Calle Margarita<small id="s4-direccion">Cra 25 B 28</small></p>
-      <a class="btn-accion an no-avanzar" id="s4-boton-whatsapp" href="#" target="_blank" rel="noopener">Confirmar asistencia</a>
-    </div>
-  </section>
-
-  <!-- ============ SLIDE 5 — Cierre ============ -->
-  <section class="slide" id="slide-final">
-    <div class="tarjeta giro-izq" style="--c:var(--acento-2);">
-      <div class="cinta an" style="background:var(--acento-2);">Nos vemos pronto</div>
-      <div class="marco-imagen" data-nombre="mascota-5.png">
-        <img alt=""><div class="placeholder"><span class="emoji">🧸</span><small></small></div>
-      </div>
-      <div class="script-grande an">¡No faltes!</div>
-      <p class="an">Tu presencia hará este momento aún más especial.</p>
-      <div class="acciones-final an">
-        <button class="btn-secundario no-avanzar" id="btn-repetir">Ver de nuevo</button>
-        <button class="btn-accion no-avanzar" id="btn-compartir">Compartir invitación</button>
-      </div>
-    </div>
-  </section>
-
+  <p class="toca-hint">Toca para continuar</p>
 </div>
 
 <script>
@@ -271,15 +220,19 @@ const CONFIG = {
   diaNumero: "29",
   mes: "Diciembre",
   hora: "6:00 PM",
-  lugarNombre: "Calle Margarita",
-  direccion: "Cra 25 B 28",
+  ubicacionTexto: "Pasaje Salazar — Las Brisas, Pilcomayo",
+  ubicacionMapsQuery: "Pasaje Salazar, Las Brisas, Pilcomayo, Perú",
   whatsappNumero: "51999999999",
-  tema: "azul",              // "azul" | "rosa" | "neutro"
-  duracionSlideMs: 7000,      // tiempo de cada diapositiva antes de avanzar
-  retrasoEntreLineas: 300     // ms entre cada línea de texto al aparecer
+  duracionSlideMs: 7000,
+  retrasoEntreLineas: 260
 };
 
-if(CONFIG.tema !== "azul") document.body.classList.add('tema-'+CONFIG.tema);
+// Assets: escena 1 y 2 son verticales (5:7), escena 3 es horizontal (3:2)
+const ESCENAS = {
+  "1": { src: "assets/bebe_mickie.png",      ratio: "vertical"   },
+  "2": { src: "assets/mickie_durmiendo.jpg", ratio: "vertical"   },
+  "3": { src: "assets/mickie_pluto.jpg",     ratio: "horizontal" }
+};
 
 const pal = CONFIG.genero === "niña" ? {pequeno:"nuestra pequeña"} : {pequeno:"nuestro pequeño"};
 document.getElementById('s1-texto').textContent = `de ${pal.pequeno} que viene en camino`;
@@ -287,40 +240,29 @@ document.getElementById('s3-papas').textContent = `${CONFIG.papas[0]} y ${CONFIG
 document.getElementById('s4-dia').textContent = CONFIG.diaNumero;
 document.getElementById('s4-mes').textContent = CONFIG.mes;
 document.getElementById('s4-hora').textContent = CONFIG.hora;
-document.getElementById('s4-lugar').firstChild.textContent = CONFIG.lugarNombre;
-document.getElementById('s4-direccion').textContent = CONFIG.direccion;
+document.getElementById('s5-ubicacion').textContent = CONFIG.ubicacionTexto;
 
 const mensajeWA = encodeURIComponent(`¡Hola! Confirmo mi asistencia al Baby Shower de ${CONFIG.papas[0]} y ${CONFIG.papas[1]} 💙`);
 document.getElementById('s4-boton-whatsapp').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${mensajeWA}`;
+document.getElementById('s5-boton-mapa').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.ubicacionMapsQuery)}`;
 
-/* ---------- Imágenes: carga la que pusiste en /assets, si no existe muestra marcador ---------- */
-document.querySelectorAll('.marco-imagen').forEach(marco=>{
-  const nombre = marco.dataset.nombre;
-  const img = marco.querySelector('img');
-  const ph = marco.querySelector('.placeholder');
-  ph.querySelector('small').textContent = 'assets/'+nombre;
-  img.src = 'assets/'+nombre;
-  img.addEventListener('error', ()=>{ img.style.display='none'; ph.style.display='flex'; }, {once:true});
-});
-
-/* ---------- Fondo compartido: nubes + chispas (una sola vez, no por slide) ---------- */
+/* ---------- Fondo decorativo (nubes + chispas, una sola vez) ---------- */
 const decor = document.getElementById('decor-fija');
 [
-  {w:110,h:60,top:'8%',left:'-4%'},
-  {w:90,h:50,bottom:'10%',right:'-3%'},
-  {w:70,h:42,top:'55%',right:'6%',op:.5}
+  {w:110,h:60,top:'6%',left:'-4%'},
+  {w:90,h:50,bottom:'8%',right:'-3%'},
+  {w:70,h:42,top:'50%',right:'4%',op:.4}
 ].forEach(n=>{
   const el = document.createElement('div');
   el.className='nube-fija';
-  Object.assign(el.style,{width:n.w+'px',height:n.h+'px',top:n.top||'',bottom:n.bottom||'',left:n.left||'',right:n.right||'',opacity:n.op||.85});
+  Object.assign(el.style,{width:n.w+'px',height:n.h+'px',top:n.top||'',bottom:n.bottom||'',left:n.left||'',right:n.right||'',opacity:n.op||.7});
   decor.appendChild(el);
 });
 [
-  {top:'10%',left:'8%',size:22,delay:'0s'},
-  {top:'16%',right:'10%',size:18,delay:'.8s'},
-  {bottom:'22%',left:'12%',size:16,delay:'1.4s'},
-  {bottom:'14%',right:'9%',size:20,delay:'.4s'},
-  {top:'42%',left:'4%',size:14,delay:'1.9s'}
+  {top:'8%',left:'6%',size:20,delay:'0s'},
+  {top:'14%',right:'8%',size:16,delay:'.8s'},
+  {bottom:'18%',left:'10%',size:14,delay:'1.4s'},
+  {bottom:'12%',right:'7%',size:18,delay:'.4s'}
 ].forEach(p=>{
   const el = document.createElement('div');
   el.className='chispa';
@@ -328,6 +270,23 @@ const decor = document.getElementById('decor-fija');
   el.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.4 7.6L22 11l-7.6 2.4L12 21l-2.4-7.6L2 11l7.6-2.4z"/></svg>';
   decor.appendChild(el);
 });
+
+/* =====================================================================
+   LETRA POR LETRA — envuelve el texto de cada .an.letras en spans
+   ===================================================================== */
+function envolverLetras(el){
+  const texto = el.textContent;
+  el.setAttribute('aria-label', texto.trim());
+  el.textContent = '';
+  [...texto].forEach((ch,i)=>{
+    const span = document.createElement('span');
+    span.className = 'letra';
+    span.style.setProperty('--i', i);
+    span.textContent = ch;
+    el.appendChild(span);
+  });
+}
+document.querySelectorAll('.an.letras').forEach(envolverLetras);
 
 /* =====================================================================
    MOTOR DE HISTORIAS
@@ -371,6 +330,35 @@ function limpiarTextos(slide){
   slide.querySelectorAll('.an').forEach(el=>el.classList.remove('mostrar'));
 }
 
+/* ---------- Crossfade de la escena de fondo (solo cuando cambia la imagen) ---------- */
+const lienzo = document.getElementById('lienzo');
+const capaA = document.getElementById('capa-a');
+const capaB = document.getElementById('capa-b');
+let capaVisibleEsA = true;
+let escenaActual = null;
+
+// Precarga inicial: escena 1 en capaA
+capaA.src = ESCENAS["1"].src;
+capaA.classList.add('visible');
+lienzo.classList.add(ESCENAS["1"].ratio);
+escenaActual = "1";
+
+function irAEscena(idEscena){
+  if(idEscena === escenaActual) return;
+  const datos = ESCENAS[idEscena];
+  const entra = capaVisibleEsA ? capaB : capaA;
+  const sale  = capaVisibleEsA ? capaA : capaB;
+  entra.src = datos.src;
+  lienzo.classList.remove('vertical','horizontal');
+  lienzo.classList.add(datos.ratio);
+  requestAnimationFrame(()=>{
+    entra.classList.add('visible');
+    sale.classList.remove('visible');
+  });
+  capaVisibleEsA = !capaVisibleEsA;
+  escenaActual = idEscena;
+}
+
 function mostrarSlide(nuevo, direccion){
   limpiarTextos(slides[actual]);
   slides[actual].classList.remove('activo');
@@ -379,6 +367,9 @@ function mostrarSlide(nuevo, direccion){
 
   actual = nuevo;
   slides.forEach((s,i)=>{ if(i!==actual) s.classList.remove('saliendo-arriba'); });
+
+  irAEscena(slides[actual].dataset.escena);
+
   slides[actual].classList.add('activo');
   activarTextos(slides[actual]);
   pintarProgreso();
@@ -417,8 +408,8 @@ function finalizarPresion(){
   clearTimeout(holdTimer);
   if(manteniendo){ reanudarAvance(); manteniendo=false; }
 }
-['pointerdown'].forEach(ev=>document.getElementById('historia').addEventListener(ev,iniciarPresion));
-['pointerup','pointercancel','pointerleave'].forEach(ev=>document.getElementById('historia').addEventListener(ev,finalizarPresion));
+['pointerdown'].forEach(ev=>document.getElementById('escenario').addEventListener(ev,iniciarPresion));
+['pointerup','pointercancel','pointerleave'].forEach(ev=>document.getElementById('escenario').addEventListener(ev,finalizarPresion));
 
 document.getElementById('zona-der').addEventListener('click',()=>{ if(disparoManten){disparoManten=false;return;} siguiente(); });
 document.getElementById('zona-izq').addEventListener('click',()=>{ if(disparoManten){disparoManten=false;return;} anterior(); });
@@ -430,6 +421,7 @@ document.getElementById('btn-repetir').addEventListener('click', e=>{
   limpiarTextos(slides[actual]);
   slides.forEach(s=>s.classList.remove('activo','saliendo-arriba'));
   actual = 0;
+  irAEscena(slides[0].dataset.escena);
   slides[0].classList.add('activo');
   activarTextos(slides[0]);
   pintarProgreso();

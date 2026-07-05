@@ -108,7 +108,7 @@ body{
 /* Texto: cascada por bloque (an) + cascada por letra (dentro de cada bloque) */
 .an{opacity:0;transform:translateY(10px);transition:opacity .5s ease, transform .5s cubic-bezier(.22,.68,.35,1);}
 .an.mostrar{opacity:1;transform:translateY(0);}
-.letra{display:inline-block;opacity:0;transform:translateY(6px);transition:opacity .38s ease, transform .38s ease;transition-delay:calc(var(--i,0) * 22ms);}
+.letra{display:inline-block;opacity:0;transform:translateY(6px);transition:opacity .32s ease, transform .32s ease;}
 .an.mostrar .letra{opacity:1;transform:translateY(0);}
 
 .eyebrow{letter-spacing:.3em;text-transform:uppercase;font-size:clamp(.55rem,2.6cqi,.8rem);color:var(--texto-medio);}
@@ -278,10 +278,17 @@ function envolverLetras(el){
   const texto = el.textContent;
   el.setAttribute('aria-label', texto.trim());
   el.textContent = '';
-  [...texto].forEach((ch,i)=>{
+  let indice = 0;
+  [...texto].forEach((ch)=>{
+    if(ch === ' '){
+      // Los espacios se dejan como texto normal: si se envuelven en un span
+      // el navegador los colapsa y las palabras quedan pegadas.
+      el.appendChild(document.createTextNode(' '));
+      return;
+    }
     const span = document.createElement('span');
     span.className = 'letra';
-    span.style.setProperty('--i', i);
+    span.dataset.i = indice++;
     span.textContent = ch;
     el.appendChild(span);
   });
@@ -323,11 +330,19 @@ function activarTextos(slide){
   const items = slide.querySelectorAll('.an');
   items.forEach((el,i)=>{
     el.classList.remove('mostrar');
+    el.querySelectorAll('.letra').forEach(span=>{
+      span.style.transitionDelay = (Number(span.dataset.i)*20)+'ms';
+    });
     setTimeout(()=>el.classList.add('mostrar'), CONFIG.retrasoEntreLineas*i + 150);
   });
 }
 function limpiarTextos(slide){
-  slide.querySelectorAll('.an').forEach(el=>el.classList.remove('mostrar'));
+  slide.querySelectorAll('.an').forEach(el=>{
+    // Al salir, todas las letras desaparecen juntas (sin escalonado)
+    // para que no se vea un parpadeo en oleada mientras la diapositiva se va.
+    el.querySelectorAll('.letra').forEach(span=>{ span.style.transitionDelay = '0ms'; });
+    el.classList.remove('mostrar');
+  });
 }
 
 /* ---------- Crossfade de la escena de fondo (solo cuando cambia la imagen) ---------- */

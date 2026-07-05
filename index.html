@@ -7,12 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* =====================================================================
-   CONFIG VISUAL — 3 escenas, cada una son las 2 diapositivas que la usan
-   Escena 1 (vertical 5:7)  -> bebe_mickie.png       -> slides 0 y 1
-   Escena 2 (vertical 5:7)  -> mickie_durmiendo.jpg  -> slides 2 y 3
-   Escena 3 (horizontal 3:2)-> mickie_pluto.jpg      -> slides 4 y 5
-   ===================================================================== */
+
 :root{
   --texto-oscuro:#33425a;
   --texto-medio:#5c6c88;
@@ -35,7 +30,6 @@ body{
 }
 .script{font-family:'Dancing Script',cursive;}
 
-/* ---------- Escenario (marco tipo "pantalla de video") ---------- */
 #escenario{
   position:relative;width:100vw;height:100dvh;
   display:flex;align-items:center;justify-content:center;
@@ -47,7 +41,6 @@ body{
 .chispa svg{width:100%;height:100%;}
 @keyframes flotar{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-12px) rotate(6deg);}}
 
-/* ---------- El "lienzo": caja con la MISMA proporción que la imagen activa ---------- */
 #lienzo{
   position:relative;z-index:5;
   max-width:94vw;max-height:88dvh;
@@ -71,7 +64,6 @@ body{
 }
 .capa-fondo.visible{opacity:1;}
 
-/* Barra de progreso */
 #progreso{position:absolute;top:0;left:0;right:0;z-index:40;display:flex;gap:6px;padding:.6rem .7rem;}
 .segmento{flex:1;height:3px;background:rgba(255,255,255,.55);border-radius:3px;overflow:hidden;box-shadow:0 0 0 1px rgba(51,66,90,.12);}
 .segmento .relleno{display:block;height:100%;width:0%;background:var(--acento);border-radius:3px;}
@@ -79,12 +71,10 @@ body{
 .segmento.activo .relleno{animation-name:llenar;animation-timing-function:linear;animation-fill-mode:forwards;}
 @keyframes llenar{ from{width:0%;} to{width:100%;} }
 
-/* Zonas táctiles para navegar (todo el viewport) */
 .zona{position:absolute;top:0;bottom:0;width:34%;z-index:50;}
 .zona.izq{left:0;}
 .zona.der{right:0;}
 
-/* ---------- Slides: viven DENTRO del lienzo, cada una limitada a su "zona segura" ---------- */
 .slide{
   position:absolute;z-index:10;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -98,12 +88,10 @@ body{
 .slide.activo{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;z-index:12;}
 .slide.saliendo-arriba{opacity:0;transform:translateY(-3cqi) scale(1.02);}
 
-/* Zonas seguras (dentro del área en blanco de cada imagen) — ajusta estos % si tu recorte cambia */
 .slide[data-escena="1"]{ top:35%; bottom:20%; left:14%; right:14%; }
 .slide[data-escena="2"]{ top:28%; bottom:22%; left:11%; right:11%; }
 .slide[data-escena="3"]{ top:7%;  bottom:45%; left:14%; right:14%; }
 
-/* Texto: cascada por bloque (an) + cascada por letra (dentro de cada bloque) */
 .an{opacity:0;transform:translateY(10px);transition:opacity .5s ease, transform .5s cubic-bezier(.22,.68,.35,1);}
 .an.mostrar{opacity:1;transform:translateY(0);}
 .letra{display:inline-block;opacity:0;transform:translateY(6px);transition:opacity .32s ease, transform .32s ease;}
@@ -153,42 +141,36 @@ p.texto{font-size:clamp(.7rem,3cqi,1rem);line-height:1.5;color:var(--texto-medio
     <img class="capa-fondo" id="capa-a" alt="">
     <img class="capa-fondo" id="capa-b" alt="">
 
-    <!-- ============ SLIDE 0 — Portada (Escena 1: bebé Mickey despierto) ============ -->
     <section class="slide" data-escena="1" id="slide-0">
       <p class="an letras eyebrow">Mi Baby Shower</p>
       <h1 class="an letras titulo" id="s0-titulo">¡Bienvenidos!</h1>
     </section>
 
-    <!-- ============ SLIDE 1 — Invitación (Escena 1) ============ -->
     <section class="slide" data-escena="1" id="slide-1">
       <h2 class="an letras subtitulo">La dulce espera<br>está por terminar…</h2>
       <div class="an letras script-grande">Baby Shower</div>
       <p class="an letras texto" id="s1-texto">de nuestro pequeño que viene en camino</p>
     </section>
 
-    <!-- ============ SLIDE 2 — Mensaje (Escena 2: Mickey durmiendo) ============ -->
     <section class="slide" data-escena="2" id="slide-2">
       <p class="an letras texto" id="s2-mensaje">El amor se multiplicará y en la familia habrá una nueva sonrisa iluminando nuestras vidas.</p>
       <div class="an letras script-grande" style="font-size:clamp(1.1rem,6cqi,1.8rem);">¡Gracias por ser parte<br>de nuestra alegría!</div>
     </section>
 
-    <!-- ============ SLIDE 3 — Papás (Escena 2) ============ -->
     <section class="slide" data-escena="2" id="slide-3">
       <p class="an letras eyebrow">Sus papitos</p>
-      <div class="an letras script-grande" id="s3-papas">Mauro y Sandra</div>
+      <div class="an letras script-grande" id="s3-papas">Daniel y Alexandra</div>
       <p class="an letras texto" id="s3-texto">Nos gustaría que estén en la primera fiestita que haremos en su honor para darle la bienvenida al mundo.</p>
     </section>
 
-    <!-- ============ SLIDE 4 — Fecha (Escena 3: Mickey y Pluto) ============ -->
     <section class="slide" data-escena="3" id="slide-4">
       <p class="an letras eyebrow">Guarda la fecha</p>
-      <div class="sticker-dia an"><span id="s4-dia">29</span></div>
-      <div class="an letras script-grande" id="s4-mes" style="font-size:clamp(1.1rem,6.5cqi,1.7rem);">Diciembre</div>
-      <p class="an letras linea-datos" id="s4-hora">6:00 PM</p>
+      <div class="sticker-dia an"><span id="s4-dia">25</span></div>
+      <div class="an letras script-grande" id="s4-mes" style="font-size:clamp(1.1rem,6.5cqi,1.7rem);">Julio</div>
+      <p class="an letras linea-datos" id="s4-hora">5:00 PM</p>
       <a class="btn-accion an no-avanzar" id="s4-boton-whatsapp" href="#" target="_blank" rel="noopener">Confirmar asistencia</a>
     </section>
 
-    <!-- ============ SLIDE 5 — Ubicación + Cierre (Escena 3) ============ -->
     <section class="slide" data-escena="3" id="slide-final">
       <p class="an letras linea-datos"><span class="pin-ubicacion">📍</span> Ubicación</p>
       <p class="an letras texto" id="s5-ubicacion">Pasaje Salazar — Las Brisas, Pilcomayo</p>
@@ -209,15 +191,13 @@ p.texto{font-size:clamp(.7rem,3cqi,1rem);line-height:1.5;color:var(--texto-medio
 </div>
 
 <script>
-/* =====================================================================
-   CONFIG — EDITA AQUÍ los datos del evento.
-   ===================================================================== */
+
 const CONFIG = {
   genero: "niño",
-  papas: ["Mauro", "Sandra"],
-  diaNumero: "29",
-  mes: "Diciembre",
-  hora: "6:00 PM",
+  papas: ["Daniel", "Alexandra"],
+  diaNumero: "25",
+  mes: "Julio",
+  hora: "05:00 PM",
   ubicacionTexto: "Pasaje Salazar — Las Brisas, Pilcomayo",
   ubicacionMapsQuery: "Pasaje Salazar, Las Brisas, Pilcomayo, Perú",
   whatsappNumero: "51999999999",
@@ -225,7 +205,6 @@ const CONFIG = {
   retrasoEntreLineas: 260
 };
 
-// Assets: escena 1 y 2 son verticales (5:7), escena 3 es horizontal (3:2)
 const ESCENAS = {
   "1": { src: "bebe_mickie.png",      ratio: "vertical"   },
   "2": { src: "mickie_durmiendo.jpg", ratio: "vertical"   },
@@ -244,7 +223,6 @@ const mensajeWA = encodeURIComponent(`¡Hola! Confirmo mi asistencia al Baby Sho
 document.getElementById('s4-boton-whatsapp').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${mensajeWA}`;
 document.getElementById('s5-boton-mapa').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.ubicacionMapsQuery)}`;
 
-/* ---------- Fondo decorativo (nubes + chispas, una sola vez) ---------- */
 const decor = document.getElementById('decor-fija');
 [
   {w:110,h:60,top:'6%',left:'-4%'},
@@ -269,9 +247,6 @@ const decor = document.getElementById('decor-fija');
   decor.appendChild(el);
 });
 
-/* =====================================================================
-   LETRA POR LETRA — envuelve el texto de cada .an.letras en spans
-   ===================================================================== */
 function envolverLetras(el){
   const texto = el.textContent;
   el.setAttribute('aria-label', texto.trim());
@@ -279,8 +254,6 @@ function envolverLetras(el){
   let indice = 0;
   [...texto].forEach((ch)=>{
     if(ch === ' '){
-      // Los espacios se dejan como texto normal: si se envuelven en un span
-      // el navegador los colapsa y las palabras quedan pegadas.
       el.appendChild(document.createTextNode(' '));
       return;
     }
@@ -293,9 +266,6 @@ function envolverLetras(el){
 }
 document.querySelectorAll('.an.letras').forEach(envolverLetras);
 
-/* =====================================================================
-   MOTOR DE HISTORIAS
-   ===================================================================== */
 const slides = Array.from(document.querySelectorAll('.slide'));
 const total = slides.length;
 let actual = 0;
@@ -336,21 +306,17 @@ function activarTextos(slide){
 }
 function limpiarTextos(slide){
   slide.querySelectorAll('.an').forEach(el=>{
-    // Al salir, todas las letras desaparecen juntas (sin escalonado)
-    // para que no se vea un parpadeo en oleada mientras la diapositiva se va.
     el.querySelectorAll('.letra').forEach(span=>{ span.style.transitionDelay = '0ms'; });
     el.classList.remove('mostrar');
   });
 }
 
-/* ---------- Crossfade de la escena de fondo (solo cuando cambia la imagen) ---------- */
 const lienzo = document.getElementById('lienzo');
 const capaA = document.getElementById('capa-a');
 const capaB = document.getElementById('capa-b');
 let capaVisibleEsA = true;
 let escenaActual = null;
 
-// Precarga inicial: escena 1 en capaA
 capaA.src = ESCENAS["1"].src;
 capaA.classList.add('visible');
 lienzo.classList.add(ESCENAS["1"].ratio);
@@ -411,7 +377,6 @@ function reanudarAvance(){
   if(relleno) relleno.style.animationPlayState='running';
 }
 
-/* ---------- Interacción táctil / mouse ---------- */
 let holdTimer=null, manteniendo=false, disparoManten=false;
 function iniciarPresion(){
   disparoManten=false;

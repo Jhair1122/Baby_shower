@@ -432,7 +432,7 @@ document.getElementById('s5-ubicacion').textContent = CONFIG.ubicacionTexto;
 
 document.getElementById('s5-boton-mapa').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.ubicacionMapsQuery)}`;
 
-const mensajeWA = encodeURIComponent(`¡Hola! 🎉 Confirmo con mucha alegría mi asistencia al Baby Shower de ${CONFIG.papas[0]} y ${CONFIG.papas[1]} 👶💙 ¡Nos vemos el ${CONFIG.diaNumero} de ${CONFIG.mes}! ✅🙌`);
+const mensajeWA = encodeURIComponent(`¡Hola! Confirmo mi asistencia al Baby Shower de ${CONFIG.papas[0]} y ${CONFIG.papas[1]} ¡Nos vemos el ${CONFIG.diaNumero} de ${CONFIG.mes}!`);
 document.getElementById('s4-boton-whatsapp').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${mensajeWA}`;
 
 const decorSobre = document.getElementById('decor-sobre');

@@ -169,10 +169,11 @@ body{
   will-change:transform;
 }
 #lienzo.vertical{aspect-ratio:5/7;height:88vh;height:88dvh;max-height:min(88vh,860px);max-height:min(88dvh,860px);}
-#lienzo.horizontal{aspect-ratio:500/333;width:94vw;max-width:min(94vw,860px);}
+#lienzo.horizontal{aspect-ratio:500/333;width:94vw;max-width:min(94vw,860px);min-height:58vh;min-height:58dvh;}
 @media (min-aspect-ratio: 5/7){ #lienzo.vertical{width:auto;height:88vh;height:88dvh;} }
 @media (min-width:900px){
   #lienzo.vertical{height:min(88vh,780px);height:min(88dvh,780px);}
+  #lienzo.horizontal{min-height:0;}
   .sobre{width:min(60vw,340px);}
 }
 
@@ -245,7 +246,7 @@ body{
 
 .slide[data-escena="1"]{ top:35%; bottom:20%; left:14%; right:14%; }
 .slide[data-escena="2"]{ top:28%; bottom:22%; left:11%; right:11%; }
-.slide[data-escena="3"]{ top:7%;  bottom:45%; left:14%; right:14%; }
+.slide[data-escena="3"]{ top:5%;  bottom:12%; left:14%; right:14%; }
 
 .an{
   opacity:0;transform:translateY(14px);
@@ -432,7 +433,7 @@ document.getElementById('s5-ubicacion').textContent = CONFIG.ubicacionTexto;
 
 document.getElementById('s5-boton-mapa').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.ubicacionMapsQuery)}`;
 
-const mensajeWA = encodeURIComponent(`¡Hola! Confirmo mi asistencia al Baby Shower de ${CONFIG.papas[0]} y ${CONFIG.papas[1]} ¡Nos vemos el ${CONFIG.diaNumero} de ${CONFIG.mes}!`);
+const mensajeWA = encodeURIComponent(`¡Hola! Confirmo con mucha alegría mi asistencia al Baby Shower de ${CONFIG.papas[0]} y ${CONFIG.papas[1]} ¡Nos vemos el ${CONFIG.diaNumero} de ${CONFIG.mes}!`);
 document.getElementById('s4-boton-whatsapp').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${mensajeWA}`;
 
 const decorSobre = document.getElementById('decor-sobre');

@@ -159,9 +159,9 @@ body{
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;
   opacity:0;pointer-events:none;
-  transform:scale(.9) rotateX(8deg);
+  transform:scale(.4) rotateX(12deg);
   transform-style:preserve-3d;
-  transition:opacity 1.3s cubic-bezier(.4,0,.2,1), transform 1.5s cubic-bezier(.22,.68,.35,1);
+  transition:opacity 1.6s cubic-bezier(.22,.68,.35,1), transform 2.1s cubic-bezier(.22,.68,.35,1);
 }
 #escenario.visible{opacity:1;pointer-events:auto;transform:scale(1) rotateX(0deg);}
 
@@ -190,16 +190,21 @@ body{
 
 .capa-fondo{
   position:absolute;inset:0;width:100%;height:100%;
-  object-fit:fill;
   opacity:0;
-  transform:scale(1.08);
-  filter:blur(8px);
-  transition:opacity 1.4s cubic-bezier(.4,0,.2,1), transform 1.8s cubic-bezier(.22,.68,.35,1), filter 1.4s ease;
-  will-change:opacity,transform,filter;
+  filter:blur(7px);
+  transform:scale(1.06);
+  transition:opacity 1.3s cubic-bezier(.4,0,.2,1), filter 1.3s ease, transform 1.6s cubic-bezier(.22,.68,.35,1);
+  will-change:opacity,filter,transform;
+  overflow:hidden;
 }
 .capa-fondo.visible{
-  opacity:1;transform:scale(1);filter:blur(0);
-  animation:kenburns 16s ease-in-out 1.8s infinite alternate;
+  opacity:1;filter:blur(0);transform:scale(1);
+}
+.capa-fondo img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:fill;
+  transform-origin:center;
+  animation:kenburns 20s ease-in-out infinite alternate;
 }
 @keyframes kenburns{ from{transform:scale(1);} to{transform:scale(1.035);} }
 
@@ -232,23 +237,19 @@ body{
   gap:.5cqi;
   text-align:center;
   transform-style:preserve-3d;
-  opacity:0;transform:translateY(4cqi) scale(.94) rotateX(-10deg);
+  opacity:0;transform:translateY(7cqi) scale(.86) rotateX(-16deg) rotateY(-9deg);
   transform-origin:center bottom;
-  transition:opacity 1.4s cubic-bezier(.3,0,.16,1), transform 1.4s cubic-bezier(.3,0,.16,1);
+  transition:opacity 1.05s cubic-bezier(.22,.68,.35,1), transform 1.3s cubic-bezier(.33,1.35,.4,1);
   pointer-events:none;
   overflow:hidden;
+  will-change:transform,opacity;
 }
 .slide.activo{
-  opacity:1;transform:translateY(0) scale(1) rotateX(0deg);pointer-events:auto;z-index:12;
-  animation:respirar-slide 6.5s ease-in-out 1.4s infinite;
+  opacity:1;transform:translateY(0) scale(1) rotateX(0deg) rotateY(0deg);pointer-events:auto;z-index:12;
 }
 .slide.saliendo-arriba{
-  opacity:0;transform:translateY(-4cqi) scale(1.05) rotateX(8deg);
-  transition:opacity 1.2s cubic-bezier(.3,0,.16,1), transform 1.2s cubic-bezier(.3,0,.16,1);
-}
-@keyframes respirar-slide{
-  0%,100%{transform:translateY(0) scale(1) rotateX(0deg);}
-  50%{transform:translateY(-5px) scale(1.007) rotateX(.7deg);}
+  opacity:0;transform:translateY(-6cqi) scale(1.08) rotateX(10deg) rotateY(9deg);
+  transition:opacity 1s cubic-bezier(.32,0,.2,1), transform 1s cubic-bezier(.32,0,.2,1);
 }
 
 .slide[data-escena="1"]{ top:35%; bottom:20%; left:14%; right:14%; }
@@ -350,8 +351,8 @@ p.texto{font-size:clamp(.7rem,3cqi,1rem);line-height:1.5;color:var(--texto-medio
   <div class="decor-fija" id="decor-fija"></div>
 
   <div id="lienzo" class="vertical">
-    <img class="capa-fondo" id="capa-a" alt="">
-    <img class="capa-fondo" id="capa-b" alt="">
+    <div class="capa-fondo" id="capa-a"><img alt=""></div>
+    <div class="capa-fondo" id="capa-b"><img alt=""></div>
 
     <section class="slide" data-escena="1" id="slide-0">
       <p class="an letras mini-decor">🍼 👣 🎀</p>
@@ -587,10 +588,17 @@ function limpiarTextos(slide){
 const lienzo = document.getElementById('lienzo');
 const capaA = document.getElementById('capa-a');
 const capaB = document.getElementById('capa-b');
+const imgA = capaA.querySelector('img');
+const imgB = capaB.querySelector('img');
 let capaVisibleEsA = true;
 let escenaActual = null;
 
-capaA.src = ESCENAS["1"].src;
+// Precargamos las 3 imágenes de fondo desde ya, para que el cambio de
+// escena nunca tenga que esperar a que la imagen termine de descargarse
+// (eso era lo que causaba el parpadeo al cambiar de sección).
+Object.values(ESCENAS).forEach(datos=>{ new Image().src = datos.src; });
+
+imgA.src = ESCENAS["1"].src;
 capaA.classList.add('visible');
 lienzo.classList.add(ESCENAS["1"].ratio);
 escenaActual = "1";
@@ -599,8 +607,9 @@ function irAEscena(idEscena){
   if(idEscena === escenaActual) return;
   const datos = ESCENAS[idEscena];
   const entra = capaVisibleEsA ? capaB : capaA;
+  const entraImg = capaVisibleEsA ? imgB : imgA;
   const sale  = capaVisibleEsA ? capaA : capaB;
-  entra.src = datos.src;
+  entraImg.src = datos.src;
   lienzo.classList.remove('vertical','horizontal');
   lienzo.classList.add(datos.ratio);
   requestAnimationFrame(()=>{
@@ -716,24 +725,28 @@ function abrirInvitacion(){
 
   sobre.classList.add('abriendo');
 
-  // Preparamos la primera escena mientras la carta todavía se está abriendo,
-  // así el contenido aparece justo cuando el telón se levanta, sin espera.
+  // Preparamos la primera escena mientras la carta todavía se está abriendo.
   slides[0].classList.add('activo');
 
-  setTimeout(()=>{ portada.classList.add('cerrando'); }, 1950);
-
+  // El escenario empieza a crecer ANTES de que la carta termine de abrirse,
+  // así ambas animaciones se superponen y se ve como una sola transición
+  // continua (la carta se abre y el contenido "brota" de ella) en vez de
+  // un corte donde una cosa desaparece y otra aparece de la nada.
   setTimeout(()=>{
     escenarioEl.classList.add('visible');
     pintarProgreso();
     activarTextos(slides[0]);
     reiniciarAvance();
     btnAudio.classList.remove('oculto');
-  }, 1950 + 350);
+  }, 550);
 
-  // Solo ocultamos la portada del todo cuando su transición de desvanecido terminó por completo.
+  // Recién cuando el escenario ya está prácticamente asentado, disolvemos
+  // la portada por completo.
+  setTimeout(()=>{ portada.classList.add('cerrando'); }, 2150);
+
   setTimeout(()=>{
     portada.style.display = 'none';
-  }, 1950 + 1300);
+  }, 2150 + 1300);
 }
 sobre.addEventListener('click', abrirInvitacion);
 

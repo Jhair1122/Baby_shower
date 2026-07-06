@@ -30,9 +30,6 @@ body{
 }
 .script{font-family:'Dancing Script',cursive;}
 
-/* =====================================================================
-   PORTADA — CARTA / SOBRE que se abre al tocar
-   ===================================================================== */
 #portada-sobre{
   position:fixed;inset:0;z-index:100;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;
@@ -145,11 +142,8 @@ body{
   transition:opacity .5s ease;
 }
 
-/* =====================================================================
-   ESCENARIO PRINCIPAL (historia)
-   ===================================================================== */
 #escenario{
-  position:relative;width:100vw;height:100dvh;
+  position:relative;width:100vw;height:100vh;height:100dvh;
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;
   opacity:0;pointer-events:none;
@@ -165,7 +159,7 @@ body{
 
 #lienzo{
   position:relative;z-index:5;
-  max-width:94vw;max-height:88dvh;
+  max-width:94vw;max-height:88vh;max-height:88dvh;
   width:auto;height:auto;
   border-radius:22px;
   overflow:hidden;
@@ -174,9 +168,13 @@ body{
   transition:box-shadow .35s ease, transform .35s ease-out;
   will-change:transform;
 }
-#lienzo.vertical{aspect-ratio:5/7;height:88dvh;}
-#lienzo.horizontal{aspect-ratio:500/333;width:94vw;}
-@media (min-aspect-ratio: 5/7){ #lienzo.vertical{width:auto;height:88dvh;} }
+#lienzo.vertical{aspect-ratio:5/7;height:88vh;height:88dvh;max-height:min(88vh,860px);max-height:min(88dvh,860px);}
+#lienzo.horizontal{aspect-ratio:500/333;width:94vw;max-width:min(94vw,860px);}
+@media (min-aspect-ratio: 5/7){ #lienzo.vertical{width:auto;height:88vh;height:88dvh;} }
+@media (min-width:900px){
+  #lienzo.vertical{height:min(88vh,780px);height:min(88dvh,780px);}
+  .sobre{width:min(60vw,340px);}
+}
 
 .capa-fondo{
   position:absolute;inset:0;width:100%;height:100%;
@@ -199,9 +197,19 @@ body{
 .segmento.activo .relleno{animation-name:llenar;animation-timing-function:linear;animation-fill-mode:forwards;}
 @keyframes llenar{ from{width:0%;} to{width:100%;} }
 
-.zona{position:absolute;top:0;bottom:0;width:34%;z-index:50;}
-.zona.izq{left:0;}
-.zona.der{right:0;}
+.zona{position:absolute;top:0;bottom:0;width:34%;z-index:50;display:flex;align-items:center;}
+.zona.izq{left:0;justify-content:flex-start;}
+.zona.der{right:0;justify-content:flex-end;}
+.zona .flecha{
+  width:2.2rem;height:2.2rem;margin:0 1rem;border-radius:50%;
+  background:rgba(255,255,255,.85);color:var(--texto-oscuro);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  opacity:0;transform:scale(.8);transition:opacity .25s ease, transform .25s ease;
+  box-shadow:0 8px 16px rgba(51,66,90,.2);
+}
+@media (hover:hover) and (pointer:fine){
+  .zona:hover .flecha{opacity:1;transform:scale(1);}
+}
 
 .btn-audio{
   position:absolute;bottom:1.6dvh;right:3vw;z-index:60;
@@ -249,7 +257,7 @@ body{
   display:inline-block;opacity:0;
   transform:translateY(10px) rotateX(-80deg);
   transform-origin:50% 100%;
-  transition:opacity .7s cubic-bezier(.22,.68,.35,1), transform .7s cubic-bezier(.22,.68,.35,1);
+  transition:opacity .85s cubic-bezier(.22,.68,.35,1), transform .85s cubic-bezier(.22,.68,.35,1);
 }
 .an.mostrar .letra{opacity:1;transform:translateY(0) rotateX(0deg);}
 
@@ -308,7 +316,6 @@ p.texto{font-size:clamp(.7rem,3cqi,1rem);line-height:1.5;color:var(--texto-medio
 </head>
 <body>
 
-<!-- ============ PORTADA: carta que se abre ============ -->
 <div id="portada-sobre">
   <div class="destello" id="destello"></div>
   <div class="decor-sobre" id="decor-sobre"></div>
@@ -384,9 +391,9 @@ p.texto{font-size:clamp(.7rem,3cqi,1rem);line-height:1.5;color:var(--texto-medio
   </div>
 
   <div id="progreso"></div>
-  <div class="zona izq" id="zona-izq"></div>
-  <div class="zona der" id="zona-der"></div>
-  <p class="toca-hint">Toca para continuar</p>
+  <div class="zona izq" id="zona-izq"><span class="flecha">‹</span></div>
+  <div class="zona der" id="zona-der"><span class="flecha">›</span></div>
+  <p class="toca-hint">Toca o haz clic para continuar</p>
   <button class="btn-audio oculto" id="btn-audio" aria-label="Silenciar música">🔊</button>
 </div>
 
@@ -402,9 +409,9 @@ const CONFIG = {
   hora: "05:00 PM",
   ubicacionTexto: "Pasaje Salazar — Las Brisas, Pilcomayo",
   ubicacionMapsQuery: "Pasaje Salazar, Las Brisas, Pilcomayo, Perú",
-  whatsappNumero: "51999999999",
+  whatsappNumero: "51900907810",
   duracionSlideMs: 8500,
-  retrasoEntreLineas: 420
+  retrasoEntreLineas: 220
 };
 
 const ESCENAS = {
@@ -426,7 +433,6 @@ const mensajeWA = encodeURIComponent(`¡Hola! Confirmo mi asistencia al Baby Sho
 document.getElementById('s4-boton-whatsapp').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${mensajeWA}`;
 document.getElementById('s5-boton-mapa').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.ubicacionMapsQuery)}`;
 
-/* ---------- Decoración flotante alrededor de la carta ---------- */
 const decorSobre = document.getElementById('decor-sobre');
 [
   {emoji:'🍼',top:'12%',left:'10%',size:'1.6rem',delay:'0s'},
@@ -443,7 +449,6 @@ const decorSobre = document.getElementById('decor-sobre');
   decorSobre.appendChild(el);
 });
 
-/* ---------- Fondo decorativo del escenario (nubes + chispas) ---------- */
 const decor = document.getElementById('decor-fija');
 [
   {w:110,h:60,top:'6%',left:'-4%'},
@@ -468,7 +473,23 @@ const decor = document.getElementById('decor-fija');
   decor.appendChild(el);
 });
 
-/* ---------- Inclinación 3D del lienzo (tilt) siguiendo el mouse ---------- */
+[
+  {emoji:'🍼',top:'9%', left:'4%',  size:'1.7rem',delay:'0s'},
+  {emoji:'👣',top:'16%',right:'5%', size:'1.4rem',delay:'.7s'},
+  {emoji:'🎀',bottom:'20%',left:'3%',size:'1.5rem',delay:'1.3s'},
+  {emoji:'🧸',bottom:'10%',right:'4%',size:'1.8rem',delay:'.4s'},
+  {emoji:'🎈',top:'40%',left:'2%', size:'1.5rem',delay:'1.8s'},
+  {emoji:'🍭',top:'46%',right:'3%',size:'1.3rem',delay:'1s'},
+  {emoji:'⭐',bottom:'42%',left:'6%',size:'1.1rem',delay:'.6s'},
+  {emoji:'💙',bottom:'34%',right:'7%',size:'1.2rem',delay:'1.5s'}
+].forEach(m=>{
+  const el = document.createElement('span');
+  el.className='motivo';
+  el.textContent = m.emoji;
+  Object.assign(el.style,{top:m.top||'',bottom:m.bottom||'',left:m.left||'',right:m.right||'',fontSize:m.size,animationDelay:m.delay});
+  decor.appendChild(el);
+});
+
 const escenarioEl2 = document.getElementById('escenario');
 escenarioEl2.addEventListener('pointermove', (e)=>{
   if(e.pointerType === 'touch') return;
@@ -486,7 +507,6 @@ escenarioEl2.addEventListener('pointerleave', ()=>{
   lienzo.style.boxShadow = '';
 });
 
-/* Suave inclinación por giro del dispositivo en móviles, si el navegador lo permite */
 function activarGiroscopio(){
   if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
     DeviceOrientationEvent.requestPermission().then(estado=>{
@@ -555,9 +575,9 @@ function activarTextos(slide){
   items.forEach((el,i)=>{
     el.classList.remove('mostrar');
     el.querySelectorAll('.letra').forEach(span=>{
-      span.style.transitionDelay = (Number(span.dataset.i)*38)+'ms';
+      span.style.transitionDelay = (Number(span.dataset.i)*26)+'ms';
     });
-    setTimeout(()=>el.classList.add('mostrar'), CONFIG.retrasoEntreLineas*i + 150);
+    setTimeout(()=>el.classList.add('mostrar'), CONFIG.retrasoEntreLineas*i + 60);
   });
 }
 function limpiarTextos(slide){
@@ -575,9 +595,6 @@ const imgB = capaB.querySelector('img');
 let capaVisibleEsA = true;
 let escenaActual = null;
 
-// Precargamos las 3 imágenes de fondo desde ya, para que el cambio de
-// escena nunca tenga que esperar a que la imagen termine de descargarse
-// (eso era lo que causaba el parpadeo al cambiar de sección).
 Object.values(ESCENAS).forEach(datos=>{ new Image().src = datos.src; });
 
 imgA.src = ESCENAS["1"].src;
@@ -682,30 +699,21 @@ document.addEventListener('keydown', e=>{
   if(e.key==='ArrowLeft') anterior();
 });
 
-/* =====================================================================
-   APERTURA DE LA CARTA — inicia la música y revela la historia
-   ===================================================================== */
 const portada = document.getElementById('portada-sobre');
 const sobre = document.getElementById('sobre');
 const escenarioEl = document.getElementById('escenario');
 const musica = document.getElementById('musica-fondo');
 const btnAudio = document.getElementById('btn-audio');
 
-// Duración total de la animación de apertura de la carta (la parte más
-// lenta es la solapa, con 1.2s + margen). Hasta que no pase esto, no
-// mostramos nada del contenido: primero se abre la carta del todo,
-// y solo DESPUÉS aparece la historia.
 const DURACION_APERTURA_CARTA = 1500;
 
 function abrirInvitacion(){
   if(sobre.disabled) return;
   sobre.disabled = true;
 
-  // Se activa dentro del propio gesto de toque, para que el navegador permita el audio.
   musica.volume = 0.55;
-  musica.play().catch(()=>{ /* si no hay archivo de música todavía, seguimos sin sonido */ });
+  musica.play().catch(()=>{ });
 
-  // Mismo gesto de toque: aprovechamos para pedir permiso del giroscopio en iOS.
   activarGiroscopio();
 
   document.querySelector('.perspectiva').classList.add('quieto');
@@ -713,9 +721,6 @@ function abrirInvitacion(){
 
   sobre.classList.add('abriendo');
 
-  // Esperamos a que la carta termine de abrirse por completo antes de
-  // revelar el contenido, para que no se sientan como dos animaciones
-  // separadas superpuestas (carta + escena a la vez), sino una detrás de otra.
   setTimeout(()=>{
     portada.classList.add('cerrando');
     escenarioEl.classList.add('visible');

@@ -378,6 +378,7 @@ p.texto{font-size:clamp(.7rem,3cqi,1rem);line-height:1.5;color:var(--texto-medio
       <div class="sticker-dia an"><span id="s4-dia">25</span></div>
       <div class="an letras script-grande" id="s4-mes" style="font-size:clamp(1.1rem,6.5cqi,1.7rem);">Julio</div>
       <p class="an letras linea-datos" id="s4-hora">5:00 PM</p>
+      <a class="btn-accion an no-avanzar" id="s4-boton-whatsapp" href="#" target="_blank" rel="noopener">Confirmar asistencia 🎉</a>
     </section>
 
     <section class="slide" data-escena="3" id="slide-final">
@@ -412,6 +413,7 @@ const CONFIG = {
   hora: "05:00 PM",
   ubicacionTexto: "Pasaje Salazar — Las Brisas, Pilcomayo",
   ubicacionMapsQuery: "Pasaje Salazar, Las Brisas, Pilcomayo, Perú",
+  whatsappNumero: "51999999999",
   duracionSlideMs: 8500,
   retrasoEntreLineas: 220
 };
@@ -432,6 +434,9 @@ document.getElementById('s4-hora').textContent = CONFIG.hora;
 document.getElementById('s5-ubicacion').textContent = CONFIG.ubicacionTexto;
 
 document.getElementById('s5-boton-mapa').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.ubicacionMapsQuery)}`;
+
+const mensajeWA = encodeURIComponent(`¡Hola! 🎉 Confirmo con mucha alegría mi asistencia al Baby Shower de ${CONFIG.papas[0]} y ${CONFIG.papas[1]} 👶💙 ¡Nos vemos el ${CONFIG.diaNumero} de ${CONFIG.mes}! ✅🙌`);
+document.getElementById('s4-boton-whatsapp').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${mensajeWA}`;
 
 const decorSobre = document.getElementById('decor-sobre');
 [

@@ -243,6 +243,25 @@ body{
   transition:opacity 1s cubic-bezier(.32,0,.2,1), transform 1s cubic-bezier(.32,0,.2,1);
 }
 
+/* Tarjeta de vidrio (glassmorphism) detrás del texto de cada sección: le da
+   profundidad "moderna" sin tocar para nada la capa de fondo (va DENTRO de
+   cada .slide, por eso nunca puede afectar ni hacer parpadear la imagen). */
+.slide::before{
+  content:"";
+  position:absolute;inset:-4% -6%;
+  background:rgba(255,255,255,.22);
+  backdrop-filter:blur(9px) saturate(160%);
+  -webkit-backdrop-filter:blur(9px) saturate(160%);
+  border:1px solid rgba(255,255,255,.5);
+  border-radius:26px;
+  box-shadow:0 16px 34px -16px rgba(51,66,90,.3), inset 0 1px 0 rgba(255,255,255,.55);
+  z-index:-1;
+  opacity:0;
+  transition:opacity 1s ease .1s;
+  pointer-events:none;
+}
+.slide.activo::before{opacity:1;}
+
 .slide[data-escena="1"]{ top:35%; bottom:20%; left:14%; right:14%; }
 .slide[data-escena="2"]{ top:28%; bottom:22%; left:11%; right:11%; }
 .slide[data-escena="3"]{ top:7%;  bottom:45%; left:14%; right:14%; }
@@ -292,14 +311,15 @@ p.texto{font-size:clamp(.7rem,3cqi,1rem);line-height:1.5;color:var(--texto-medio
 .linea-datos{font-size:clamp(.7rem,3.2cqi,.95rem);color:var(--texto-oscuro);font-weight:600;}
 
 .btn-accion,.btn-secundario,.btn-mapa{
+  position:relative;overflow:hidden;
   display:inline-block;font-family:'Quicksand',sans-serif;font-weight:600;border-radius:30px;cursor:pointer;
   font-size:clamp(.62rem,2.8cqi,.82rem);letter-spacing:.02em;text-decoration:none;
   padding:.55em 1.4em;border:none;
   transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease;
 }
-.btn-accion{background:var(--acento);color:#fff;box-shadow:0 10px 18px rgba(51,66,90,.25);}
-.btn-mapa{background:var(--acento-3);color:#fff;box-shadow:0 10px 18px rgba(51,66,90,.25);}
-.btn-secundario{background:transparent;border:2px solid var(--acento);color:var(--acento);padding:.5em 1.2em;}
+.btn-accion{background:linear-gradient(135deg,var(--acento),#6d8fb5);color:#fff;box-shadow:0 10px 20px -4px rgba(51,66,90,.38);}
+.btn-mapa{background:linear-gradient(135deg,var(--acento-3),#e0b06e);color:#fff;box-shadow:0 10px 20px -4px rgba(51,66,90,.38);}
+.btn-secundario{background:rgba(255,255,255,.5);backdrop-filter:blur(6px);border:2px solid var(--acento);color:var(--acento);padding:.5em 1.2em;}
 .fila-botones{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.3rem;}
 .pin-ubicacion{font-size:clamp(.9rem,4cqi,1.2rem);}
 
@@ -374,7 +394,6 @@ p.texto{font-size:clamp(.7rem,3cqi,1rem);line-height:1.5;color:var(--texto-medio
       <div class="sticker-dia an"><span id="s4-dia">25</span></div>
       <div class="an letras script-grande" id="s4-mes" style="font-size:clamp(1.1rem,6.5cqi,1.7rem);">Julio</div>
       <p class="an letras linea-datos" id="s4-hora">5:00 PM</p>
-      <a class="btn-accion an no-avanzar" id="s4-boton-whatsapp" href="#" target="_blank" rel="noopener">Confirmar asistencia</a>
     </section>
 
     <section class="slide" data-escena="3" id="slide-final">
@@ -409,7 +428,6 @@ const CONFIG = {
   hora: "05:00 PM",
   ubicacionTexto: "Pasaje Salazar — Las Brisas, Pilcomayo",
   ubicacionMapsQuery: "Pasaje Salazar, Las Brisas, Pilcomayo, Perú",
-  whatsappNumero: "51900907810",
   duracionSlideMs: 8500,
   retrasoEntreLineas: 220
 };
@@ -429,8 +447,6 @@ document.getElementById('s4-mes').textContent = CONFIG.mes;
 document.getElementById('s4-hora').textContent = CONFIG.hora;
 document.getElementById('s5-ubicacion').textContent = CONFIG.ubicacionTexto;
 
-const mensajeWA = encodeURIComponent(`¡Hola! Confirmo mi asistencia al Baby Shower de ${CONFIG.papas[0]} y ${CONFIG.papas[1]}`);
-document.getElementById('s4-boton-whatsapp').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${mensajeWA}`;
 document.getElementById('s5-boton-mapa').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.ubicacionMapsQuery)}`;
 
 const decorSobre = document.getElementById('decor-sobre');

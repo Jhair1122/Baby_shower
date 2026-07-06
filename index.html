@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  
+
 :root{
   --texto-oscuro:#33425a;
   --texto-medio:#5c6c88;
@@ -409,7 +409,7 @@ const CONFIG = {
   hora: "05:00 PM",
   ubicacionTexto: "Pasaje Salazar — Las Brisas, Pilcomayo",
   ubicacionMapsQuery: "Pasaje Salazar, Las Brisas, Pilcomayo, Perú",
-  whatsappNumero: "51900907810",
+  whatsappNumero: "51999999999",
   duracionSlideMs: 8500,
   retrasoEntreLineas: 220
 };
@@ -712,7 +712,7 @@ function abrirInvitacion(){
   sobre.disabled = true;
 
   musica.volume = 0.55;
-  musica.play().catch(()=>{ });
+  musica.play().catch(()=>{ /* si no hay archivo de música todavía, seguimos sin sonido */ });
 
   activarGiroscopio();
 
